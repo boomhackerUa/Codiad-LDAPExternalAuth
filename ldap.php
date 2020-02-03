@@ -30,10 +30,10 @@
 ///////////////////
 
 // The LDAP connection URI of the server.
-	$server = "ldap://ldap.example.com:389";
+	$server = "ldap://ldap.jumpcloud.com:389";
 
 // The DN to search under on the server.
-	$basedn = "ou=people,dc=example,dc=com";
+	$basedn = "ou=Users,o=5dbb6ff919b1ee04f012f3da,dc=jumpcloud,dc=com";
     
 // Use anonymous bind
 //  This does not work by default on Active Directory, however this is the 
@@ -41,10 +41,10 @@
 //    Optionally one can bind to a user for search on any LDAP server or
 //    enable anonymous binds for search on Active Directory, however this
 //    allows for any search option.
-	$anonbind = true;
+	$anonbind = false;
     
 // LDAP User for bind (if anonymous bind is set to "false").
-	$binddn = "cn=binduser,cn=Users,dc=example,dc=com";
+	$binddn = "uid=ldap,ou=Users,o=5dbb6ff919b1ee04f012f3da,dc=jumpcloud,dc=com";
 	$bindpass = "";
 
 // The LDAP search filter. If you aren't sure what this is, the official
