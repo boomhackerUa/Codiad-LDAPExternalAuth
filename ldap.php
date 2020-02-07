@@ -45,7 +45,7 @@
     
 // LDAP User for bind (if anonymous bind is set to "false").
 	$binddn = "uid=ldap,ou=Users,o=5dbb6ff919b1ee04f012f3da,dc=jumpcloud,dc=com";
-	$bindpass = "";
+	$bindpass = "ServicePassword$";
 
 // The LDAP search filter. If you aren't sure what this is, the official
 // IETF RFC definition (quite technical) is here: 
@@ -83,7 +83,7 @@
 
 	// Check if our session is not logged in.
 	if ( !isset( $_SESSION['user'] ) ) {
-
+		
 		// Check if a username and password were posted.
 		if ( isset( $_POST['username'] ) && isset( $_POST['password'] ) ) {
 
@@ -114,12 +114,11 @@
 				
 				// Set preauth flag using call to ldap_bind on authenticated bind.
 				$preauth = ldap_bind( $socket, $binddn, $bindpass );
-			
 			}
 
 			// Check if LDAP pre-authentication (or socket creation) was a success.
 			if ( $preauth == true ) {
-
+				error_log("Connected to LDAP!", 0);
 				// Search through basedn based on the filter, and count entries.
 				$result = ldap_search( $socket, $basedn, $tfilter );
 				$count  = ldap_count_entries( $socket, $result );
@@ -135,12 +134,12 @@
 					if ( $auth === -1 ) {
 
 						// Deny login and send message, An LDAP error occurred.
-						die( formatJSEND( "error", "An LDAP error has occurred: " . ldap_error($socket) ) );
+						error_log(  "An LDAP error has occurred: " . ldap_error($socket)  , 0);
 
 					} elseif ( $auth == false ) {
 
 						// Invalid login.
-						die( formatJSEND( "error", "Invalid user name or password." ) );
+						error_log(  "Invalid user name or password." , 0 );
 
 					} elseif ( $auth == true ) {
 
@@ -158,7 +157,7 @@
 							} else {
 
 								// Deny login and send message, the user doesn't exist within users.php.
-								die( formatJSEND( "error", "User " . $User->username . " does not exist within Codiad." ) );
+								error_log(  "User " . $User->username . " does not exist within Codiad." , 0 );
 
 							}
 
@@ -193,21 +192,20 @@
 				} elseif ( $count > 1 ) {
 
 					// We returned too many results. Error as such.
-					die( formatJSEND( "error", "A server error occurred: LDAP filter result is non-unique. Please ensure this is a unique identifier within its context.
-												If the problem persists, please contact the webmaster. If you are the webmaster, please check the LDAP filter used." ) );
+					error_log(  "A server error occurred: LDAP filter result is non-unique. Please ensure this is a unique identifier within its context.
+												If the problem persists, please contact the webmaster. If you are the webmaster, please check the LDAP filter used."  , 0);
 
 				} else {
 
 					// Invalid login.
-					die( formatJSEND( "error", "Incorrect user name or password." ) );
+					error_log(  "Incorrect user name or password." , 0 );
 
 				}
 
 			} else {
-
 				// The server is having issues connecting to the LDAP server. Error as such.
-				die( formatJSEND( "error", "An error occurred: Cannot connect to LDAP server. Please contact the webmaster. 
-											If you are the webmaster, please contact your LDAP server administrator or check if your LDAP server is running." ) );
+				error_log( "An error occurred: Cannot connect to LDAP server. Please contact the webmaster. 
+											If you are the webmaster, please contact your LDAP server administrator or check if your LDAP server is running." , 0 );
 
 			}
 		}
